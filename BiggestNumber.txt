@@ -1,0 +1,16 @@
+#include <stdio.h>
+int main()
+{
+    double n1, n2, n3, x;
+    scanf("%lf %lf %lf", &n1, &n2, &n3);
+
+    if( n1>=n2 && n1>=n3 )
+        x=n1;
+    if( n2>=n3 && n2>=n1 )
+        x=n2;
+    if( n3>=n1 && n3>=n2 )
+        x=n3;
+       
+    printf("Out of %lf, %lf, %lf the biggest number is %lf",n1,n2,n3,x);
+    return 0;
+}
