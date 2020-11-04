@@ -1,0 +1,393 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct student/// structure for all the students, numbers and marks
+{
+    char student_name[50];
+    int student_number;
+    char student_mark[50];
+    struct student*next;
+}*head; ///points to the first item of our list
+
+
+
+void students_list(int x, char name[])
+{
+    struct student *current, *rhs;
+    current= (struct student *)malloc(sizeof(struct student));///malloc used to allocate the necessary byte of memory
+    current->student_number=x;/// gets the variable named student_number from the struct that 'current' points to
+    strcpy(current->student_name, name);///will copy the string that is pointed by "name" into the specified array
+    current->student_mark[0]= -1;
+    rhs=(struct student*) head;
+    while(rhs->next!= NULL)
+        rhs=rhs->next;///we set the 'rhs' pointer to the next node, until the next node is null
+    (*rhs).next = current;
+    rhs=current;
+    (*rhs).next=NULL;
+
+}
+
+void add_student( int x, char name[])
+{
+    struct student *current;
+    current=(struct student *)malloc(sizeof(struct student));
+    current->student_number=x;
+    strcpy(current->student_name, name);
+    current->student_mark[0]=-1;
+
+    if (head==NULL)///always check here if head is null
+    {
+        head=current;
+        head->next=NULL;
+    }
+
+    else
+    {
+        current->next=head;
+        head=current;
+    }
+}
+
+void add_next_student(int x,char name[],int place)
+{
+    int i;
+    struct student *current,*lhs,*rhs; ///Note: lhs as left-hand-side or previous, rhs as right-hand-side or after
+    rhs=head;
+    current=(struct student *)malloc(sizeof(struct student));
+    current->student_number=x;
+    strcpy(current->student_name, name);
+    current->student_mark[0]=-1;
+
+    for(i=1; i<place; i++)///moves everything forward with one place)
+    {
+        lhs=rhs;
+        rhs=rhs->next;
+    }
+
+    lhs->next=current;///the pointer previous to the current one points to the current node(student)
+    lhs=current;///previous pointer will be the current pointer
+    lhs->next=rhs;///the one that has become the current pointer points to the node on its left
+    return;
+}
+
+void add(int x,char name[])
+{
+    int count=0;
+    struct student *current;
+    current=head;///begin from the top
+    while(current!=NULL)
+    {
+        count++;
+        current=current->next;
+    }
+    if(count==0)
+        add_student(x, name);
+
+    else
+        students_list(x, name);
+
+}
+void add_tree(int x, char name[])
+{
+    int count=0;
+    struct student *current;
+    current=head;///start from the top
+    if(current==NULL)
+        add_student(x,name);///when the place is empty
+    else
+    {
+        while(current!=NULL)
+        {
+            if(current->student_number< x)
+                count++;
+            current=current->next;
+        }
+        if(count==0)
+            add_student(x, name);
+
+        else if(count<nr_nodes())
+            add_next_student(x,name,++count);
+        else
+            students_list(x,name);
+
+    }
+}
+
+int remove_student(int x)
+{
+    struct student *current, *lhs;
+    current=head;
+    while(current!=0 )
+    {
+        if(current->student_number==x)///if we find the right student proceed with deleting the record
+        {
+            if(current==head)
+            {
+                head=current->next;
+                free(current);///Deallocate allocated memory
+            }
+            else
+            {
+                lhs->next=current->next;
+                free(current);
+            }
+            printf("...Student successfully removed\n");
+            return 1;
+        }
+        else///if it's not the right student, go to the next position
+        {
+            lhs=current;
+            current=current->next;
+        }
+    }
+    return 0;
+}
+
+void add_new_mark(int x,int y)/// adding a new mark for a specific student
+{
+    int a=0,b=0;
+    struct student *current;
+    current=head;///starting from the top
+    while(current!=NULL&& a==0)
+    {
+        if(current->student_number==x)///the specific student is found by the student number
+        {
+            while (current->student_mark[b]!=-1)
+                b++;///while there are other marks for the same student, move to another position for the mark
+            current->student_mark[b]=y;
+            b++;
+            current->student_mark[b]=-1;
+            a=1;
+        }
+        else
+            current=current->next;///if the student numbers don't match, check the next student
+    }
+}
+
+void find_student_number(int x)/// in the end it will be used to print the report of a specific student
+{
+    struct student*current;
+    current=head;///starting from the top
+    int y=0,z=0;
+    while (current!=NULL&&z==0 )
+    {
+        if( current->student_number== x)
+        {
+            printf ("The student's name %s \n", current->student_name);
+            printf ("The student's number %d\n", current->student_number);
+            while(current->student_mark[y]!=-1)///while the student has a mark
+            {
+                printf ("The student's mark %d\n",current->student_mark[y]);
+                y++;///move on to the next mark
+            }
+            z=1;///all marks are printed
+        }
+        else
+            current=current->next;///move on to the next one
+
+    }
+}
+
+void find_student_name ( char name[] )///needed in order to save the file
+{
+    struct student*current ;
+    current=head;///starting from the top
+    int y=0;
+    while(current !=NULL)
+    {
+        if(strcmp(current->student_name, name)==0)///strcmp returns 0 if both strings are zero
+        {
+            printf ("The name of the student is -> %s\n", current->student_name);
+            printf ("The student number is -> %d \n", current->student_number);
+            y=0;
+            while (current->student_mark[y]!= -1)
+            {
+                printf  ("The mark/s of the student -> %d\n\n\n\n ", current->student_mark[y]);
+                y++;
+            }
+        }
+        current=current->next;
+    }
+}
+
+void print_all_reports (struct student *current)///for printing the reports of all students at ONCE
+{
+    int y;
+    if(current==NULL)
+        return;///no students records to print
+    while(current!=NULL)
+    {
+        y=0;
+        printf("\n\n The student's name: %s\n",current->student_name);
+        printf("The student's number: %d\n",current->student_number);
+        while (current->student_mark[y]!=-1)
+        {
+            printf ( "The student's mark: %d\n",current->student_mark[y]);
+            y++;///moving to the next mark
+        }
+        current=current->next;
+    }
+    printf("\n\n\n ...Reports of all student successfully printed\n");
+}
+
+void save_to_file()
+{
+    FILE *f=fopen("student.rep","wb");///w->creates an empty file, or empties an already existent one, "b" stands for binary
+    struct student*current=head;
+    while (current!=NULL)
+    {
+        fwrite(current,sizeof(struct student),1,f);
+        find_student_name(current->student_name);
+        current=current->next;
+    }
+    fclose(f);
+    printf("\n...Successfully saved\n");
+}
+
+void retrieve_data()
+{
+    struct student *current = (struct student*)malloc(sizeof(struct student));
+    struct student *pointer;
+    struct student *lhs_pointer;
+    FILE *f=fopen("student.rep", "rb"); ///r stands for opening file for update, b stands for binary
+    head=current;
+    if (f!=NULL)
+    {
+        do ///used do...while() so that the loop is completed at least ONCE
+        {
+            fread(current,sizeof(struct student),1, f);///read function used for binary
+            pointer=head;
+            lhs_pointer=head;
+            while(lhs_pointer->next!=NULL)
+            {
+                pointer=(struct student*)malloc(sizeof(struct student));
+                fread(pointer,sizeof(struct student), 1, f);///read function used for binary
+                lhs_pointer->next=pointer;///moves one position ahead
+                lhs_pointer=pointer;
+            }
+        }
+        while(fread(current, sizeof(struct student), 1, f) == 1);
+    }
+    printf("/n...Data successfully retrieved from the file\n");
+}
+
+
+int verify_student_number(int student_number)
+{
+    struct student *current;
+    current=head;///start from the top
+    while(current!= NULL)
+    {
+        if(current->student_number==student_number)
+            return 1;///if the student numbers do match return 1
+        current=current->next;/// continue looking
+
+    }
+    return 0;
+}
+
+int nr_nodes()
+{
+    struct student *current;
+    current=head;///begin from the top
+    int y=0;
+    while(current!=NULL)///this loop will calculate the nodes in the list
+    {
+        current=current->next;
+        y++;
+    }
+    return y;
+}
+
+int main(int argc, char *argv[])///argc, argv-->used to pass arguments to our program
+{
+    int choice, choice2, x,b;
+    char name[50];
+    head=0; ///head must start from 0, since there are no students
+    do
+    {
+        printf("MENU\n\nPlease make a choice:\n 1)Introduce student \n 2)Remove student \n 3)Introduce marks \n 4)Print student's report \n 5)Print report for all students\n 6)Save to file \n 7)Retrieve data from file \n 8)Exit \n");
+        if(scanf("%d",&choice)<=0)
+        {
+            printf("Make a choice:\n");
+            exit(0);
+        }
+        else
+        {
+            switch(choice)
+            {
+            case 1:///Introduce student
+                printf("Type the student number:\n ");
+                scanf("%d",&x);
+                printf("Type the student name: \n ");
+                scanf("%s",name);
+                if(verify_student_number(x)==1)///verifies if there already is a student with the same number
+                {
+                    printf("This student number already exists in the system, please type another one!\n ");
+                }
+                else
+                {
+                    if (strcmp(argv[0], "students_list"))
+                        add(x, name);
+                    else if(strcmp(argv[1]," add_tree"))
+                        add_tree(x, name);
+
+                    printf("\n...Student successfully added\n");
+                }
+                break;
+            case 2:///Remove student
+                if(head==0)
+                    printf("No student to delete\n");
+                else
+                {
+                    printf("Enter the number of the student you wish to delete: ");
+                    scanf("%d",&x);
+                    if(remove_student(x))
+                        printf("The student was successfully deleted\n");
+                    else
+                        printf("The student number typed could not be found\n");
+
+                }
+                break;
+
+            case 3:///Introduce marks
+                printf("Type the student number\n");
+                scanf ("%d",&x);
+                printf ("Add a mark: ");
+                scanf ("%d",&b);
+                add_new_mark(x, b);
+                printf("\n...The mark was successfully added\n");
+                break;
+
+            case 4:///Print students report
+                printf("Type the student number:\n");
+                scanf("%d", &x);
+                find_student_number(x);
+
+                break;
+
+            case 5:///Print report for all students
+                if(head==NULL)
+                    printf("Nothing to print\n");
+                else
+                    print_all_reports(head);
+                ///printf("\n...All records successfully printed\n");
+                break;
+
+            case 6:///Save to file
+                save_to_file();
+                break;
+
+            case 7:///Retrieve data from file
+                retrieve_data();
+                break;
+
+            case 8:///Exit
+                return 0;
+            }
+        }
+    }
+    while(choice!=8);
+    return 0;
+}
