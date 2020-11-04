@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+void Average(float a, float b, float c)
+{
+    float avg=0;
+    scanf("%f%f%f", &a, &b, &c);
+    avg=(a+b+c)/3.0;
+    printf("\n The average is \t %f", avg);
+}
+
+int Factorial (int n)
+{
+    int fact=1,i;
+    scanf("%d", &n);
+    for(i=1; i<=n; i++)
+    {
+        fact=fact*i;
+    }
+    printf("The factorial of the number %d is %d\n", n, fact);
+}
+
+int Square_root( int n)
+{
+    int j = 1, r = 1, sq=0;
+    scanf("%d", &n);
+    while (r < n)
+    {
+        j++;
+        r=j*j;
+        if (r==n)
+            sq=j;
+    }
+    if (sq==0)
+        printf("%d",-1);
+    else
+        printf("The square root of the number %d is %d\n", n, sq);
+
+}
+int main()
+{
+    int m, n, p,s;
+    do
+    {
+        printf("Write 1 for Average\n");
+        printf("Write 2 for Factorial\n");
+        printf("Write 3 for Square Root\n");
+        printf("Write 4 for Exit\n");
+        scanf("%d", &s);
+        switch(s)
+        {
+        case 1:
+            Average(m,n,p);
+            scanf("%d", &m, &n, &p);
+            break;
+
+        case 2:
+            Factorial(n);
+            scanf("%d",n);
+            break;
+
+        case 3:
+            Square_root(n);
+            scanf("%d",n);
+            break;
+        case 4:
+            printf("End of the program\n");
+            break;
+        }
+    }
+    while(s!=4);
+
+    return 0;
+}
